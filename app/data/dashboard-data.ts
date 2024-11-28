@@ -1,6 +1,15 @@
 // app/data/dashboard-data.ts
-
 export const dashboardData = {
+  config: {
+    widgets: {
+      yearAttendance: { visible: true },
+      homework: { visible: true },
+      photos: { visible: true },
+      plannedAbsence: { visible: true },
+      extracurricular: { visible: true },
+      nowNextClass: { visible: true }
+    }
+  },
   meta: {
     timestamp: "2024-11-21T10:30:00Z",
     version: "1.0",
@@ -51,7 +60,37 @@ export const dashboardData = {
           status: "pending"
         }
       ],
-      absences: []  // Sarah has no absences
+      absences: [],
+      extraCurricular: [
+        {
+          activity: "Football practice",
+          date: "27 Nov 2024",
+          startTime: "4:00pm",
+          endTime: "5:00pm",
+          location: "Sports Field A",
+          status: "upcoming"
+        }
+      ],
+      photos: [
+        {
+          id: "PH2024001",
+          date: "28 Nov 2024",
+          subject: "Science",
+          teacher: "Mr. Wilson",
+          caption: "Microscope observations",
+          imageUrl: "https://plus.unsplash.com/premium_photo-1661299335644-f610fe862065",
+          timestamp: "2024-11-28T09:30:00Z"
+        },
+        {
+          id: "PH2024003",
+          date: "27 Nov 2024",
+          subject: "PE",
+          teacher: "Mr. Thompson",
+          caption: "Basketball practice",
+          imageUrl: "https://images.unsplash.com/photo-1716041189947-d6b645638f1c",
+          timestamp: "2024-11-27T14:15:00Z"
+        }
+      ]
     },
     {
       id: "ST2024002",
@@ -106,7 +145,28 @@ export const dashboardData = {
           reason: "Field trip",
           type: "multi-day"
         }
+      ],
+      extraCurricular: [
+        {
+          activity: "Chess club",
+          date: "21 Nov 2024",
+          startTime: "4:00pm",
+          endTime: "5:30pm",
+          location: "Assembly hall B",
+          status: "today"
+        }
+      ],
+      photos: [
+        {
+          id: "PH2024002",
+          date: "27 Nov 2024",
+          subject: "Art",
+          teacher: "Ms. Roberts",
+          caption: "Watercolor techniques",
+          imageUrl: "https://plus.unsplash.com/premium_photo-1686920245809-f045740b6086",
+          timestamp: "2024-11-27T11:45:00Z"
+        }
       ]
     }
   ]
-}
+};

@@ -3,6 +3,8 @@ import YearAttendanceWidget from "~/components/YearAttendanceWidget";
 import HomeworkWidget from "~/components/HomeworkWidget";
 import NowNextClassWidget from "~/components/NowNextClassWidget";
 import PlannedAbsenceWidget from "~/components/PlannedAbsenceWidget";
+import ExtraCurricularWidget from "~/components/ExtraCurricularWidget";
+import PhotoWidget from "~/components/PhotoWidget";
 import type { MetaFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
@@ -81,6 +83,22 @@ const transformDataForWidgets = (data: typeof dashboardData, selectedStudent: st
           total: student.attendance.term.total
         }
       }))
+    },
+
+    extraCurricularData: {
+      students: filteredStudents.map(student => ({
+        name: student.name,
+        extraCurricular: student.extraCurricular || []
+      }))
+    },
+
+    photoData: {
+      photos: filteredStudents.flatMap(student =>
+        (student.photos || []).map(photo => ({
+          ...photo,
+          student: student.name
+        }))
+      )
     }
   };
 };
@@ -107,15 +125,13 @@ const DarkModeButton = ({ darkMode, onToggle }: { darkMode: boolean; onToggle: (
   </button>
 );
 
-const StudentSelector = ({
-  students,
-  selectedStudent,
-  onStudentChange
-}: {
-  students: string[],
-  selectedStudent: string,
-  onStudentChange: (student: string) => void
-}) => (
+interface StudentSelectorProps {
+  students: string[];
+  selectedStudent: string;
+  onStudentChange: (student: string) => void;
+}
+
+const StudentSelector = ({ students, selectedStudent, onStudentChange }: StudentSelectorProps) => (
   <div className="relative">
     <select
       value={selectedStudent}
@@ -134,16 +150,14 @@ const StudentSelector = ({
 );
 
 export default function Index() {
-  const { rawData, attendanceData, homeworkData, scheduleData, absencesData } = useLoaderData<typeof loader>();
+  const { rawData, attendanceData, homeworkData, scheduleData, absencesData, photoData } = useLoaderData<typeof loader>();
   const [selectedStudent, setSelectedStudent] = useState('all');
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
-    // Check system preference on mount
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     setDarkMode(prefersDark);
 
-    // Listen for system preference changes
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleChange = (e: MediaQueryListEvent) => setDarkMode(e.matches);
     mediaQuery.addEventListener('change', handleChange);
@@ -161,6 +175,47 @@ export default function Index() {
 
   const transformedData = transformDataForWidgets(rawData, selectedStudent);
   const studentNames = rawData.students.map(student => student.name);
+  const widgetConfig = rawData.config.widgets;
+
+  // Render widgets in the exact order from config
+  const renderWidgets = () => {
+    return Object.keys(widgetConfig).map(key => {
+      const widgetProps = {
+        yearAttendance: {
+          component: <YearAttendanceWidget data={transformedData.attendanceData} />,
+          visible: widgetConfig.yearAttendance.visible
+        },
+        homework: {
+          component: <HomeworkWidget data={transformedData.homeworkData} />,
+          visible: widgetConfig.homework.visible
+        },
+        nowNextClass: {
+          component: <NowNextClassWidget data={transformedData.scheduleData} />,
+          visible: widgetConfig.nowNextClass.visible
+        },
+        plannedAbsence: {
+          component: <PlannedAbsenceWidget data={{ ...transformedData.absencesData, students: studentNames }} />,
+          visible: widgetConfig.plannedAbsence.visible
+        },
+        extracurricular: {
+          component: <ExtraCurricularWidget data={transformedData.extraCurricularData} />,
+          visible: widgetConfig.extracurricular.visible
+        },
+        photos: {
+          component: <PhotoWidget data={transformedData.photoData} />,
+          visible: widgetConfig.photos.visible
+        }
+      }[key];
+
+      if (!widgetProps?.visible) return null;
+
+      return (
+        <div key={key} className="bg-white dark:bg-slate-800 shadow-sm hover:shadow-md transition-all duration-200 rounded-lg">
+          {widgetProps.component}
+        </div>
+      );
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-900 transition-colors duration-200">
@@ -170,7 +225,7 @@ export default function Index() {
           <div className="flex items-center justify-between mb-2">
             <div className="flex-grow text-center">
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white font-montserrat transition-colors">
-              Nord Anglia Family Portal (vAlpha)
+                Nord Anglia Family Portal (vAlpha)
               </h1>
             </div>
             <DarkModeButton darkMode={darkMode} onToggle={() => setDarkMode(!darkMode)} />
@@ -199,18 +254,7 @@ export default function Index() {
 
           {/* Widgets Grid */}
           <div className="grid grid-cols-1 gap-4 sm:gap-6 md:gap-8 lg:grid-cols-2">
-            <div className="bg-white dark:bg-slate-800 shadow-sm hover:shadow-md transition-all duration-200 rounded-lg">
-              <YearAttendanceWidget data={transformedData.attendanceData} />
-            </div>
-            <div className="bg-white dark:bg-slate-800 shadow-sm hover:shadow-md transition-all duration-200 rounded-lg">
-              <HomeworkWidget data={transformedData.homeworkData} />
-            </div>
-            <div className="bg-white dark:bg-slate-800 shadow-sm hover:shadow-md transition-all duration-200 rounded-lg">
-              <NowNextClassWidget data={transformedData.scheduleData} />
-            </div>
-            <div className="bg-white dark:bg-slate-800 shadow-sm hover:shadow-md transition-all duration-200 rounded-lg">
-              <PlannedAbsenceWidget data={{ ...transformedData.absencesData, students: studentNames }} />
-            </div>
+            {renderWidgets()}
           </div>
         </div>
 
