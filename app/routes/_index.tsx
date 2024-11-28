@@ -3,7 +3,7 @@ import YearAttendanceWidget from "~/components/YearAttendanceWidget";
 import HomeworkWidget from "~/components/HomeworkWidget";
 import NowNextClassWidget from "~/components/NowNextClassWidget";
 import PlannedAbsenceWidget from "~/components/PlannedAbsenceWidget";
-import ExtraCurricularWidget from "~/components/ExtraCurricularWidget";
+import ExtraCurricularWidget from "~/components/ExtracurricularWidget";
 import PhotoWidget from "~/components/PhotoWidget";
 import type { MetaFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
