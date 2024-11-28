@@ -28,43 +28,45 @@ interface TimetableWidgetProps {
 
 const ClassBlock: React.FC<ClassBlockProps> = ({ currentClass, nextClass, showStudent }) => (
   <div className="py-4 first:pt-0 last:pb-0">
-    <div className="flex items-center gap-6">
+    <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
       {showStudent && (
-        <div className="w-24">
+        <div className="sm:w-24">
           <span className="font-medium text-gray-900 dark:text-white">{currentClass.student}</span>
         </div>
       )}
 
-      <div className="flex-1 px-4">
-        <div>
-          <span className="text-xs font-medium px-2 py-1 bg-indigo-50 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 rounded-full">
-            Current
-          </span>
-          <div className="mt-2 flex flex-col">
-            <span className="font-medium text-gray-900 dark:text-white">{currentClass.subject}</span>
-            <span className="text-sm text-gray-500 dark:text-slate-400">{currentClass.teacher}</span>
-            <span className="text-sm text-gray-400 dark:text-slate-500">
-              {currentClass.startTime} - {currentClass.endTime}
+      <div className="flex flex-row items-start gap-4 sm:gap-6 flex-1">
+        <div className="flex-1">
+          <div>
+            <span className="text-xs font-medium px-2 py-1 bg-indigo-50 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 rounded-full">
+              Current
             </span>
+            <div className="mt-2 flex flex-col">
+              <span className="font-medium text-gray-900 dark:text-white">{currentClass.subject}</span>
+              <span className="text-sm text-gray-500 dark:text-slate-400">{currentClass.teacher}</span>
+              <span className="text-sm text-gray-400 dark:text-slate-500">
+                {currentClass.startTime} - {currentClass.endTime}
+              </span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="text-gray-300 dark:text-slate-600">
-        <ArrowRight className="w-5 h-5" />
-      </div>
+        <div className="text-gray-300 dark:text-slate-600 mt-8">
+          <ArrowRight className="w-5 h-5" />
+        </div>
 
-      <div className="flex-1 px-4">
-        <div>
-          <span className="text-xs font-medium px-2 py-1 bg-purple-50 dark:bg-purple-500/20 text-purple-600 dark:text-purple-300 rounded-full">
-            Next
-          </span>
-          <div className="mt-2 flex flex-col">
-            <span className="font-medium text-gray-900 dark:text-white">{nextClass.subject}</span>
-            <span className="text-sm text-gray-500 dark:text-slate-400">{nextClass.teacher}</span>
-            <span className="text-sm text-gray-400 dark:text-slate-500">
-              {nextClass.startTime} - {nextClass.endTime}
+        <div className="flex-1">
+          <div>
+            <span className="text-xs font-medium px-2 py-1 bg-purple-50 dark:bg-purple-500/20 text-purple-600 dark:text-purple-300 rounded-full">
+              Next
             </span>
+            <div className="mt-2 flex flex-col">
+              <span className="font-medium text-gray-900 dark:text-white">{nextClass.subject}</span>
+              <span className="text-sm text-gray-500 dark:text-slate-400">{nextClass.teacher}</span>
+              <span className="text-sm text-gray-400 dark:text-slate-500">
+                {nextClass.startTime} - {nextClass.endTime}
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -89,7 +91,7 @@ const TimetableWidget: React.FC<TimetableWidgetProps> = ({ data }) => {
         </div>
       </div>
 
-      <div className="flex gap-6 mb-4 px-1">
+      <div className="hidden sm:flex gap-6 mb-4 px-1">
         {showStudentColumn && (
           <div className="w-24">
             <span className="text-sm font-medium text-gray-500 dark:text-slate-400">Student</span>

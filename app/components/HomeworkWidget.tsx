@@ -39,7 +39,49 @@ const AssignmentRow: React.FC<AssignmentRowProps> = ({
   showStudent 
 }) => (
   <div className="py-4 first:pt-0 last:pb-0">
-    <div className="flex items-center gap-6">
+    {/* Mobile Layout */}
+    <div className="md:hidden">
+      {showStudent && (
+        <div className="mb-2">
+          <span className="font-medium text-gray-900 dark:text-white">{student}</span>
+        </div>
+      )}
+      
+      <div className="space-y-3">
+        <div className="flex flex-col gap-1">
+          <span className="text-sm px-2 py-0.5 bg-violet-50 dark:bg-violet-500/20 text-violet-600 dark:text-violet-300 rounded w-fit">
+            {subject}
+          </span>
+          <span className="font-medium text-gray-900 dark:text-white">{homework}</span>
+          <span className="text-sm text-gray-500 dark:text-slate-400">{teacher}</span>
+        </div>
+
+        <div className="flex items-center gap-3 text-sm">
+          <div className="flex gap-1">
+            <span className="text-gray-500 dark:text-slate-400">Set:</span>
+            <span className="text-gray-900 dark:text-white">{setDate}</span>
+          </div>
+          <span className="text-gray-300 dark:text-slate-600">→</span>
+          <div className="flex gap-1">
+            <span className="text-gray-500 dark:text-slate-400">Due:</span>
+            <span className="text-gray-900 dark:text-white">{dueDate}</span>
+          </div>
+        </div>
+
+        <div>
+          <span className={`px-3 py-1 rounded-full text-sm font-medium
+            ${status.toLowerCase() === 'submitted' 
+              ? 'bg-emerald-50 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-300' 
+              : 'bg-amber-50 dark:bg-amber-500/20 text-amber-600 dark:text-amber-300'
+            }`}>
+            {status}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    {/* Desktop Layout */}
+    <div className="hidden md:flex items-center gap-6">
       {showStudent && (
         <div className="w-24">
           <span className="font-medium text-gray-900 dark:text-white">{student}</span>
@@ -98,7 +140,8 @@ const HomeworkWidget: React.FC<HomeworkWidgetProps> = ({ data }) => {
         </div>
       </div>
 
-      <div className="flex gap-6 mb-4 px-1">
+      {/* Desktop Headers - Hidden on Mobile */}
+      <div className="hidden md:flex gap-6 mb-4 px-1">
         {showStudentColumn && (
           <div className="w-24">
             <span className="text-sm font-medium text-gray-500 dark:text-slate-400">Student</span>

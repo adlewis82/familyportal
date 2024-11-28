@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Calendar, Plus } from 'lucide-react';
-import { dashboardData } from './data/dashboard-data';
 
 interface PlannedAbsencesWidgetProps {
   data: {
@@ -17,11 +16,43 @@ interface PlannedAbsencesWidgetProps {
   };
 }
 
+interface RegisterAbsenceFormData {
+  student: string;
+  fromDate: string;
+  fromTime: string;
+  toDate: string;
+  toTime: string;
+  reason: string;
+  moreInfo: string;
+}
+
 const AbsenceRow = ({ student, startDate, startTime, endDate, endTime, reason, showStudent }) => {
   const isMultiDay = startDate !== endDate;
+  
   return (
     <div className="py-3 first:pt-0 last:pb-0 border-b last:border-0 border-gray-100 dark:border-slate-700">
-      <div className="flex items-center gap-2 min-w-0">
+      {/* Mobile Layout (hidden on desktop) */}
+      <div className="md:hidden space-y-4">
+        <div className="text-xl text-gray-900 dark:text-white">{student}</div>
+        <div className="flex items-baseline gap-2">
+          <span className="text-lg font-medium text-gray-900 dark:text-white">{startTime}</span>
+          <span className="text-gray-400 dark:text-slate-500">{startDate}</span>
+          <span className="text-gray-300 dark:text-slate-600 mx-1">→</span>
+          <span className="text-lg font-medium text-gray-900 dark:text-white">{endTime}</span>
+          <span className="text-gray-400 dark:text-slate-500">
+            {isMultiDay ? endDate : 'Same day'}
+          </span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-gray-500 dark:text-slate-400 text-lg">{reason}</span>
+          <span className="text-blue-600 bg-blue-50 px-3 py-1 rounded-full text-sm">
+            {isMultiDay ? 'Multi-day' : 'Single day'}
+          </span>
+        </div>
+      </div>
+
+      {/* Desktop Layout (hidden on mobile) */}
+      <div className="hidden md:flex items-center gap-2 min-w-0">
         {showStudent && (
           <div className="w-20 flex-shrink-0">
             <span className="font-medium text-gray-900 dark:text-white">{student}</span>
@@ -29,25 +60,15 @@ const AbsenceRow = ({ student, startDate, startTime, endDate, endTime, reason, s
         )}
         <div className="flex-shrink min-w-0 px-2">
           <div className="flex items-center gap-2 whitespace-nowrap">
-            <span className="font-medium text-gray-900 dark:text-white">
-              {startTime}
-            </span>
-            <span className="text-gray-400 dark:text-slate-500">
-              {startDate}
-            </span>
+            <span className="font-medium text-gray-900 dark:text-white">{startTime}</span>
+            <span className="text-gray-400 dark:text-slate-500">{startDate}</span>
           </div>
-          <div className="mt-1 text-sm text-gray-500 dark:text-slate-400 truncate">
-            {reason}
-          </div>
+          <div className="mt-1 text-sm text-gray-500 dark:text-slate-400 truncate">{reason}</div>
         </div>
-        <div className="text-gray-300 dark:text-slate-600 flex-shrink-0 px-2">
-          →
-        </div>
+        <div className="text-gray-300 dark:text-slate-600 flex-shrink-0 px-2">→</div>
         <div className="flex-shrink min-w-0 px-2">
           <div className="flex items-center gap-2 whitespace-nowrap">
-            <span className="font-medium text-gray-900 dark:text-white">
-              {endTime}
-            </span>
+            <span className="font-medium text-gray-900 dark:text-white">{endTime}</span>
             <span className="text-gray-400 dark:text-slate-500">
               {isMultiDay ? endDate : 'Same day'}
             </span>
@@ -130,8 +151,8 @@ const RegisterAbsenceForm = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl p-6 w-full max-w-md">
+    <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
         <h2 className="text-xl font-semibold mb-4 font-montserrat text-gray-900 dark:text-white">Register Absence</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -221,6 +242,7 @@ const RegisterAbsenceForm = ({
               <option value="Doctor">Doctor</option>
               <option value="Dentist">Dentist</option>
               <option value="Illness">Illness</option>
+              <option value="Field trip">Field trip</option>
             </select>
             {errors.reason && <p className="mt-1 text-sm text-red-500">{errors.reason}</p>}
           </div>
@@ -261,23 +283,24 @@ const RegisterAbsenceForm = ({
 const PlannedAbsencesWidget = ({ data }) => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const showStudentColumn = data.planned.length > 1;
-  const selectedStudent = data.planned[0]?.student;
   const students = data.students || [];
 
   return (
     <div className="p-6 flex flex-col h-full">
+      {/* Header - Keeping desktop styling */}
       <div className="flex items-center gap-3 mb-6">
         <div className="w-10 h-10 bg-blue-100 dark:bg-blue-500/20 rounded-full flex items-center justify-center">
           <Calendar className="w-5 h-5 text-blue-600 dark:text-blue-300" />
         </div>
         <div>
-          <h2 className="text-lg font-semibold font-montserrat text-gray-900 dark:text-white">Planned Absences</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Planned Absences</h2>
           {data.planned.length === 1 && (
             <p className="text-sm text-gray-500 dark:text-slate-400">{data.planned[0].student}</p>
           )}
         </div>
       </div>
 
+      {/* Absences List */}
       <div className="flex-grow">
         {data.planned.length > 0 ? (
           <div className="divide-y divide-gray-100 dark:divide-slate-700">
@@ -295,16 +318,18 @@ const PlannedAbsencesWidget = ({ data }) => {
             ))}
           </div>
         ) : (
-          <EmptyState selectedStudent={selectedStudent} />
+          <EmptyState selectedStudent={data.planned[0]?.student} />
         )}
       </div>
 
+      {/* Register Button - Different styles for mobile/desktop */}
       <div className="mt-6 flex justify-end">
         <button
           onClick={() => setIsFormOpen(true)}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800"
+          className="md:inline-flex md:items-center md:gap-1.5 md:px-3 md:py-1.5 md:bg-blue-600 md:text-white md:rounded-lg md:text-sm md:font-medium md:hover:bg-blue-700 md:focus:outline-none md:focus:ring-2 md:focus:ring-blue-500 md:focus:ring-offset-2 md:dark:focus:ring-offset-slate-800
+                   w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-full text-lg font-medium hover:bg-blue-700 md:w-auto"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-5 h-5 md:w-4 md:h-4" />
           Register Absence
         </button>
       </div>
